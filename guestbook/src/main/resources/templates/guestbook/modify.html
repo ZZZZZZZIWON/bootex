@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content})}">
+    <th:block th:fragment="content">
+        <h1 class="mt-4">GuestBook Modify Page</h1>
+
+        <form action="/guestbook/modify" method="post">
+
+            <!--페이지 번호-->
+            <input type="hidden" name="page" th:value="${requestDTO.page}">
+            <input type="hidden" name="type" th:value="${requestDTO.type}">
+            <input type="hidden" name="keyword" th:value="${requestDTO.keyword}">
+
+            <div class="form-group mb-3">
+                <label class="form-label">Gno</label>
+                <input type="text" th:value="${dto.gno}" class="form-control" name="gno" readonly>
+            </div>
+            <div class="form-group mb-3">
+                <label class="form-label">Title</label>
+                <input type="text" th:value="${dto.title}" class="form-control" name="title">
+            </div>
+            <div class="form-group mb-3">
+                <label class="form-label">Content</label>
+                <textarea rows="5" class="form-control" name="content" >[[${dto.content}]]</textarea>
+            </div>
+            <div class="form-group mb-3">
+                <label class="form-label">Writer</label>
+                <input type="text" th:value="${dto.writer}" name="writer" class="form-control"  readonly>
+            </div>
+            <div class="form-group mb-3">
+                <label class="form-label">RegDate</label>
+                <input type="text" th:value="${#temporals.format(dto.regDate, 'yyyy/MM/dd HH:mm:ss')}" class="form-control"  readonly>
+            </div>
+            <div class="form-group mb-3">
+                <label class="form-label">ModDate</label>
+                <input type="text" th:value="${#temporals.format(dto.modDate, 'yyyy/MM/dd HH:mm:ss')}" class="form-control"  readonly>
+            </div>
+        </form>
+
+            <button type="button" class="btn btn-primary modifyBtn">Modify</button>
+            <button type="button" class="btn btn-warning listBtn">List</button>
+            <button type="button" class="btn btn-danger removeBtn">Remove</button>
+
+            <script th:inline="javascript">
+                const actionForm = $("form");
+
+                $(".removeBtn").click(function() {
+                    actionForm
+                        .attr("action", "/guestbook/remove")
+                        .attr("method", "post");
+                    actionForm.submit();
+                })
+
+                $(".modifyBtn").click(function () {
+                    if(!confirm("수정하시겠습니까?")) {
+                        return;
+                    }
+
+                    actionForm
+                        .attr("action", "/guestbook/modify")
+                        .attr("method", "post")
+                        .submit();
+                })
+
+                $(".listBtn").click(function () {
+                    // const pageInfo = $("input[name='page']");
+                    const page = $("input[name='page']");
+                    const type = $("input[name='type']");
+                    const keyword = $("input[name='keyword']");
+
+                    actionForm.empty();
+                    actionForm.append(page)
+                    actionForm.append(type)
+                    actionForm.append(keyword)
+
+                    actionForm
+                        .attr("action", "/guestbook/list")
+                        .attr("method", "get")
+                    console.log(actionForm.html());
+                    actionForm.submit();
+                })
+            </script>
+    </th:block>
+</th:block>
